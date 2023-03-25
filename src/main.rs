@@ -1,7 +1,7 @@
-pub struct Term<'a>(pub &'a str);
+struct Term<'a>(&'a str);
 
 pub struct TfIdf<'a> {
-    pub documents: Vec<Vec<Term<'a>>>,
+    documents: Vec<Vec<Term<'a>>>,
 }
 
 impl<'a> PartialEq for Term<'a> {
@@ -11,15 +11,15 @@ impl<'a> PartialEq for Term<'a> {
 }
 
 impl<'a> TfIdf<'a> {
-    pub fn new() -> Self {
+    fn new() -> Self {
         Self { documents: vec![] }
     }
 
-    pub fn add_document_vec(&mut self, document: Vec<Term<'a>>) {
+    fn add_document_vec(&mut self, document: Vec<Term<'a>>) {
         self.documents.push(document);
     }
 
-    pub fn add_document_str(&mut self, document: &'a str) {
+    fn add_document_str(&mut self, document: &'a str) {
         let mut terms: Vec<Term<'a>> = vec![];
 
         for word in document.split(' ') {
@@ -29,7 +29,7 @@ impl<'a> TfIdf<'a> {
         self.add_document_vec(terms);
     }
 
-    pub fn count_documents_containing_term(&self, term: &'a Term) -> i32 {
+    fn count_documents_containing_term(&self, term: &'a Term) -> i32 {
         let mut count: i32 = 0;
 
         for document in &self.documents {
@@ -43,7 +43,7 @@ impl<'a> TfIdf<'a> {
         count
     }
 
-    pub fn idf_score(&self, term: &Term) -> f32 {
+    fn idf_score(&self, term: &Term) -> f32 {
         if self.count_documents_containing_term(term) > 0 {
             (self.documents.len() as f32 / self.count_documents_containing_term(term) as f32)
                 .log10()
@@ -52,7 +52,7 @@ impl<'a> TfIdf<'a> {
         }
     }
 
-    pub fn tf_score(&self, term: &Term, document_index: usize) -> f32 {
+    fn tf_score(&self, term: &Term, document_index: usize) -> f32 {
         let ref document: Vec<Term<'a>> = self.documents[document_index];
 
         let counts: f32 = document.into_iter().filter(|&dx| dx == term).count() as f32;
@@ -64,11 +64,11 @@ impl<'a> TfIdf<'a> {
         };
     }
 
-    pub fn tf_idf_score(&self, term: &'a Term, document_index: usize) -> f32 {
+    fn tf_idf_score(&self, term: &'a Term, document_index: usize) -> f32 {
         self.tf_score(term, document_index) * self.idf_score(term)
     }
 
-    pub fn similarities(&self, term: &'a Term) -> Vec<(usize, f32)> {
+    fn similarities(&self, term: &'a Term) -> Vec<(usize, f32)> {
         let mut values: Vec<(usize, f32)> = vec![];
 
         for i in 0usize..self.documents.len() {
@@ -78,9 +78,9 @@ impl<'a> TfIdf<'a> {
         values
     }
 
-    pub fn sort_by_similarities(&self, term: &'a Term) {
-        let mut sortedDocuments: Vec<Vec<Term<'a>>> = vec![];
-        let similaritiesVec = self.similarities(term);
+    fn sort_by_similarities(&self, term: &'a Term) {
+        let mut sorted_documents: Vec<Vec<Term<'a>>> = vec![];
+        let similarities_vec = self.similarities(term);
 
         todo!()
     }
